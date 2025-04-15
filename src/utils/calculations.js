@@ -35,13 +35,23 @@ const durationFactors = {
     '1-5 годин': 1,
     '5-7 годин': 1.5,
     '12 годин': 2,
-    '3 дні': 5,
+    '3 дні': 2.5,
 };
 
 // Функція для розрахунку кількості м'яса
-export const calculateMeatAmount = (type, people, hunger) => {
+export const calculateMeatAmount = (type, people, duration) => {
     const baseAmount = baseMeatAmounts[type] || 0;
-    return (people * baseAmount * hunger).toFixed(1);
+    const durationFactor = durationFactors[duration] || 1;
+    const meatAmount = people * baseAmount * durationFactor;
+
+    // Обмеження: не більше 1 кг на людину на день
+    const maxMeatPerPersonPerDay = 1;
+    const maxMeat =
+        people *
+        maxMeatPerPersonPerDay *
+        (durationFactor / durationFactors['1-5 годин']);
+
+    return Math.min(meatAmount, maxMeat).toFixed(1);
 };
 
 // Функція для розрахунку кількості готового м'яса

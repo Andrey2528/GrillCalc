@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@/components/Button';
 
 const DurationSelector = ({ duration, setDuration, durationOptions }) => {
     return (
@@ -9,12 +8,18 @@ const DurationSelector = ({ duration, setDuration, durationOptions }) => {
             </label>
             <div className="flex gap-3 flex-wrap">
                 {durationOptions.map((option) => (
-                    <Button
+                    <button
                         key={option}
-                        isActive={duration === option}
-                        label={option}
+                        type="button" // Встановлюємо тип кнопки як "button"
+                        className={`px-4 py-2 border rounded-lg ${
+                            duration === option
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-gray-800 text-orange-200'
+                        }`}
                         onClick={() => setDuration(option)}
-                    />
+                    >
+                        {option}
+                    </button>
                 ))}
             </div>
         </div>

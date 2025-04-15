@@ -8,7 +8,6 @@ import {
 import {
     PeopleInput,
     MeatSelector,
-    HungerSlider,
     DurationSelector,
     AlcoholSelector,
 } from '@/components/Form';
@@ -22,11 +21,11 @@ const alcoholOptions = ['Немає', 'Міцний', 'Неміцний'];
 const HomePageContent = () => {
     const [people, setPeople] = useState(4);
     const [meat, setMeat] = useState('Свинина');
-    const [hunger, setHunger] = useState(3);
     const [duration, setDuration] = useState('1-5 годин');
     const [alcohol, setAlcohol] = useState('Немає');
     const [alcoholType, setAlcoholType] = useState('');
     const [specificAlcohol, setSpecificAlcohol] = useState('');
+    const [hasOtherFood, setHasOtherFood] = useState(false); // Додано стан для перемикача
 
     useEffect(() => {
         ReactGA.send({
@@ -35,9 +34,23 @@ const HomePageContent = () => {
         });
     }, []);
 
-    const rawMeat = calculateMeatAmount(meat, people, hunger);
+    // Розрахунок кількості м'яса
+    let rawMeat = calculateMeatAmount(meat, people, duration);
+    if (hasOtherFood) {
+        rawMeat *= 0.7; // Зменшуємо кількість м'яса на 30%, якщо є інша їжа
+    }
     const cookedMeat = calculateCookedMeat(rawMeat, meat);
-    const alcoholAmount = alcohol === 'Немає' ? '0' : calculateAlcoholAmount(specificAlcohol, alcoholType, people, duration);
+
+    // Розрахунок кількості алкоголю
+    const alcoholAmount =
+        alcohol === 'Немає'
+            ? '0'
+            : calculateAlcoholAmount(
+                  specificAlcohol,
+                  alcoholType,
+                  people,
+                  duration,
+              );
 
     return (
         <div className="bg-gradient-to-br from-gray-800 via-red-700 to-orange-600 min-h-screen flex items-center justify-center">
@@ -47,9 +60,16 @@ const HomePageContent = () => {
                 </h1>
                 <form className="space-y-8">
                     <PeopleInput people={people} setPeople={setPeople} />
-                    <MeatSelector meat={meat} setMeat={setMeat} meatTypes={meatTypes} />
-                    <HungerSlider hunger={hunger} setHunger={setHunger} />
-                    <DurationSelector duration={duration} setDuration={setDuration} durationOptions={durationOptions} />
+                    <MeatSelector
+                        meat={meat}
+                        setMeat={setMeat}
+                        meatTypes={meatTypes}
+                    />
+                    <DurationSelector
+                        duration={duration}
+                        setDuration={setDuration}
+                        durationOptions={durationOptions}
+                    />
                     <AlcoholSelector
                         alcohol={alcohol}
                         setAlcohol={setAlcohol}
@@ -63,12 +83,43 @@ const HomePageContent = () => {
                     />
                     <div className="space-y-4">
                         <label className="block text-lg font-semibold text-orange-300">
+                            Буде ще якась їжа?
+                        </label>
+                        <div className="flex items-center space-x-4">
+                            <label className="flex items-center space-x-2">
+                                <input
+                                    type="radio"
+                                    name="otherFood"
+                                    value="yes"
+                                    checked={hasOtherFood === true}
+                                    onChange={() => setHasOtherFood(true)}
+                                    className="form-radio text-orange-500"
+                                />
+                                <span className="text-orange-200">Так</span>
+                            </label>
+                            <label className="flex items-center space-x-2">
+                                <input
+                                    type="radio"
+                                    name="otherFood"
+                                    value="no"
+                                    checked={hasOtherFood === false}
+                                    onChange={() => setHasOtherFood(false)}
+                                    className="form-radio text-orange-500"
+                                />
+                                <span className="text-orange-200">Ні</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <label className="block text-lg font-semibold text-orange-300">
                             Ваш рецепт шашличного відпочинку:
                         </label>
                         <div className="p-4 bg-gray-800 rounded-lg text-center font-bold text-orange-200">
                             <p>Сирого м'яса візьми: {rawMeat} КГ</p>
                             <p>Готового м'яса вийде: {cookedMeat} КГ</p>
-                            {alcohol !== 'Немає' && <p>Алкоголю: {alcoholAmount} Л</p>}
+                            {alcohol !== 'Немає' && (
+                                <p>Алкоголю: {alcoholAmount} Л</p>
+                            )}
                         </div>
                     </div>
                 </form>

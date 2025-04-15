@@ -1,17 +1,14 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/postcss';
-import autoprefixer from 'autoprefixer';
-
 
 export default defineConfig({
-    plugins: [react(), tailwindcss(), autoprefixer()],
+    plugins: [react()],
     css: {
         postcss: {
             plugins: [
-                tailwindcss(),
-                autoprefixer(),
+                require('@tailwindcss/postcss'), // Використовуйте цей плагін
+                require('autoprefixer'),
             ],
         },
     },
@@ -25,7 +22,7 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: {
-                    react: ['react', 'react-dom', 'react-router-dom'],
+                    react: ['react', 'react-dom'],
                 },
             },
         },
