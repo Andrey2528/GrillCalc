@@ -1,0 +1,8 @@
+/node_modules/
+.eslint.json
+.prettierrc.json
+.prettierignore
+.DS_Store
+/src/.DS_Store
+/.vscode
+/dist/
